@@ -7,10 +7,9 @@ from django.contrib.auth import views as auth_views
 
 
 
-#-------------FOR ADMIN RELATED URLS
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.home_view,name=''),
+    path('',views.home_view,name='index'),
   
 
 
@@ -18,9 +17,11 @@ urlpatterns = [
     path('contactus', views.contactus_view),
 
 
-    path('adminclick', views.adminclick_view),
-    path('doctorclick', views.doctorclick_view),
-    path('patientclick', views.patientclick_view),
+   path('afterlogin/', views.afterlogin_view, name='afterlogin'),
+
+   path('adminclick/', views.adminclick_view, name='adminclick'),
+   path('doctorclick/', views.doctorclick_view, name='doctorclick'),
+   path('patientclick/', views.patientclick_view, name='patientclick'),
 
     path('adminsignup', views.admin_signup_view),
     path('doctorsignup', views.doctor_signup_view,name='doctorsignup'),
@@ -31,8 +32,9 @@ urlpatterns = [
     path('patientlogin', LoginView.as_view(template_name='hospital/patientlogin.html')),
 
 
-    path('afterlogin', views.afterlogin_view,name='afterlogin'),
+ 
     path('logout', LogoutView.as_view(template_name='hospital/index.html'),name='logout'),
+   
 
 
     path('admin-dashboard/', views.admin_dashboard_view, name='admin-dashboard'),
@@ -72,7 +74,7 @@ urlpatterns = [
 ]
 
 
-#---------FOR DOCTOR RELATED URLS-------------------------------------
+
 urlpatterns +=[
     path('doctor-dashboard', views.doctor_dashboard_view,name='doctor-dashboard'),
 
@@ -89,7 +91,7 @@ urlpatterns +=[
 
 
 
-#---------FOR PATIENT RELATED URLS-------------------------------------
+
 urlpatterns +=[
 
     path('patient-dashboard', views.patient_dashboard_view,name='patient-dashboard'),
@@ -99,5 +101,6 @@ urlpatterns +=[
     path('patient-discharge', views.patient_discharge_view,name='patient-discharge'),
 
 ]
+
 
 

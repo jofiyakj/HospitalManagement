@@ -7,12 +7,24 @@ from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required,user_passes_test
 from datetime import datetime,timedelta,date
 from django.conf import settings
+import io
+from xhtml2pdf import pisa
+from django.template.loader import get_template
+from django.template import Context
+from django.http import HttpResponse
 
 # Create your views here.
 def home_view(request):
     if request.user.is_authenticated:
-        return HttpResponseRedirect('afterlogin')
+        # return HttpResponseRedirect('afterlogin')
+        return redirect('index')
     return render(request,'hospital/index.html')
+
+# views.py
+
+
+
+
 
 
 
@@ -21,21 +33,24 @@ def home_view(request):
 #for showing signup/login button for admin(by sumit)
 def adminclick_view(request):
     if request.user.is_authenticated:
-        return HttpResponseRedirect('afterlogin')
+        # return HttpResponseRedirect('afterlogin')
+        return redirect('index')
     return render(request,'hospital/adminclick.html')
 
 
 #for showing signup/login button for doctor(by sumit)
 def doctorclick_view(request):
     if request.user.is_authenticated:
-        return HttpResponseRedirect('afterlogin')
+        # return HttpResponseRedirect('afterlogin')
+        return redirect('index')
     return render(request,'hospital/doctorclick.html')
 
 
 #for showing signup/login button for patient(by sumit)
 def patientclick_view(request):
     if request.user.is_authenticated:
-        return HttpResponseRedirect('afterlogin')
+        # return HttpResponseRedirect('afterlogin')
+        return redirect('index')
     return render(request,'hospital/patientclick.html')
 
 
@@ -102,7 +117,7 @@ def patient_signup_view(request):
 
 
 
-#-----------for checking user is doctor , patient or admin(by sumit)
+# for checking user is doctor , patient or admin(by sumit)
 
 
 def is_admin(user):
@@ -114,34 +129,39 @@ def is_doctor(user):
 def is_patient(user):
     return user.groups.filter(name='PATIENT').exists()
 
-#---------AFTER ENTERING CREDENTIALS WE CHECK WHETHER USERNAME AND PASSWORD IS OF ADMIN,DOCTOR OR PATIENT
+#AFTER ENTERING CREDENTIALS WE CHECK WHETHER USERNAME AND PASSWORD IS OF ADMIN,DOCTOR OR PATIENT
+
+
 
 
 @login_required(login_url='login')
 def afterlogin_view(request):
     if is_admin(request.user):
-        return redirect('admin-dashboard')
+        return redirect('admin-dashboard')  # Changed from 'admin-dashboard'
+    
     elif is_doctor(request.user):
         accountapproval = models.Doctor.objects.filter(user_id=request.user.id, status=True)
         if accountapproval.exists():
             return redirect('doctor-dashboard')
         else:
             return render(request, 'hospital/doctor_wait_for_approval.html')
+    
     elif is_patient(request.user):
         accountapproval = models.Patient.objects.filter(user_id=request.user.id, status=True)
         if accountapproval.exists():
             return redirect('patient-dashboard')
         else:
             return render(request, 'hospital/patient_wait_for_approval.html')
+    
     else:
-        return render(request, 'hospital/error.html', {"message": "User role not recognized or user not authenticated."})
+        return render(request, 'hospital/login.html', {"message": "User role not recognized or user not authenticated."})
 
 
 
 
-#---------------------------------------------------------------------------------
-#------------------------ ADMIN RELATED VIEWS START ------------------------------
-#---------------------------------------------------------------------------------
+
+# ADMIN RELATED VIEWS START
+
 
 @login_required(login_url='login')  # or 'adminlogin' if using separate admin login page
 @user_passes_test(is_admin, login_url='login')  # Also apply here
@@ -368,7 +388,7 @@ def admin_add_patient_view(request):
 
 
 
-#------------------FOR APPROVING PATIENT BY ADMIN----------------------
+#FOR APPROVING PATIENT BY ADMIN
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_approve_patient_view(request):
@@ -399,7 +419,7 @@ def reject_patient_view(request,pk):
 
 
 
-#--------------------- FOR DISCHARGING PATIENT BY ADMIN START-------------------------
+# FOR DISCHARGING PATIENT BY ADMIN START
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_discharge_patient_view(request):
@@ -457,12 +477,8 @@ def discharge_patient_view(request,pk):
 
 
 
-#--------------for discharge patient bill (pdf) download and printing
-import io
-from xhtml2pdf import pisa
-from django.template.loader import get_template
-from django.template import Context
-from django.http import HttpResponse
+#for discharge patient bill (pdf) download and printing
+
 
 
 def render_to_pdf(template_src, context_dict):
@@ -497,7 +513,7 @@ def download_pdf_view(request,pk):
 
 
 
-#-----------------APPOINTMENT START--------------------------------------------------------------------
+#APPOINTMENT START
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_appointment_view(request):
@@ -558,18 +574,8 @@ def reject_appointment_view(request,pk):
     appointment=models.Appointment.objects.get(id=pk)
     appointment.delete()
     return redirect('admin-approve-appointment')
-#---------------------------------------------------------------------------------
-#------------------------ ADMIN RELATED VIEWS END ------------------------------
-#---------------------------------------------------------------------------------
 
-
-
-
-
-
-#---------------------------------------------------------------------------------
-#------------------------ DOCTOR RELATED VIEWS START ------------------------------
-#---------------------------------------------------------------------------------
+#ADMIN RELATED VIEWS END  DOCTOR RELATED VIEWS START
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
 def doctor_dashboard_view(request):
@@ -676,18 +682,14 @@ def delete_appointment_view(request,pk):
 
 
 
-#---------------------------------------------------------------------------------
-#------------------------ DOCTOR RELATED VIEWS END ------------------------------
-#---------------------------------------------------------------------------------
+
+#DOCTOR RELATED VIEWS END 
 
 
 
 
 
-
-#---------------------------------------------------------------------------------
-#------------------------ PATIENT RELATED VIEWS START ------------------------------
-#---------------------------------------------------------------------------------
+#-PATIENT RELATED VIEWS START
 @login_required(login_url='patientlogin')
 @user_passes_test(is_patient)
 def patient_dashboard_view(request):
@@ -840,8 +842,7 @@ def patient_discharge_view(request):
     return render(request,'hospital/patient_discharge.html',context=patientDict)
 
 
-#------------------------ PATIENT RELATED VIEWS END ------------------------------
-#---------------------------------------------------------------------------------
+# PATIENT RELATED VIEWS END 
 
 
 
@@ -850,27 +851,43 @@ def patient_discharge_view(request):
 
 
 
-#---------------------------------------------------------------------------------
-#------------------------ ABOUT US AND CONTACT US VIEWS START ------------------------------
-#---------------------------------------------------------------------------------
+
+#ABOUT US AND CONTACT US VIEWS START 
+
 def aboutus_view(request):
     return render(request,'hospital/aboutus.html')
 
+
+
 def contactus_view(request):
-    sub = forms.ContactusForm()
+    form = forms.ContactusForm()
     if request.method == 'POST':
-        sub = forms.ContactusForm(request.POST)
-        if sub.is_valid():
-            email = sub.cleaned_data['Email']
-            name=sub.cleaned_data['Name']
-            message = sub.cleaned_data['Message']
-            send_mail(str(name)+' || '+str(email),message,settings.EMAIL_HOST_USER, settings.EMAIL_RECEIVING_USER, fail_silently = False)
-            return render(request, 'hospital/contactussuccess.html')
-    return render(request, 'hospital/contactus.html', {'form':sub})
+        form = forms.ContactusForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['Email']
+            name = form.cleaned_data['Name']
+            message = form.cleaned_data['Message']
+            try:
+                send_mail(
+                    subject=f'{name} || {email}',
+                    message=message,
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=settings.EMAIL_RECEIVING_USER,
+                    fail_silently=False
+                )
+                return render(request, 'hospital/contactussuccess.html')
+            except Exception as e:
+                return render(request, 'hospital/contactus.html', {
+                    'form': form,
+                    'error': str(e)  # Pass the exception to the template
+                })
+
+    return render(request, 'hospital/contactus.html', {'form': form})
 
 
-#---------------------------------------------------------------------------------
-#------------------------ ADMIN RELATED VIEWS END ------------------------------
-#---------------------------------------------------------------------------------
+
+
+
+# ADMIN RELATED VIEWS END
 
 

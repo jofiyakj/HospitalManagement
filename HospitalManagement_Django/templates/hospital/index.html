@@ -7,46 +7,50 @@
 
 
 <head>
-  <style media="screen">
-    .jumbotron {
-      margin-top: 0px;
-      margin-bottom: 0px;
-      background-image: url('{% static "images/back.jpg" %}');
-      background-size: cover;
-      background-repeat: no-repeat;
-    }
 
-    .jumbotron h5,
-    h3 {
-      text-align: center;
-    }
+<style>
+.jumbotron {
+  margin: 0;
+  padding: 60px 20px;
+  background-image: url("{% static 'images/back2.jpg' %}");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: white;
+}
 
+/* Text alignment */
+.jumbotron h3,
+.jumbotron h5 {
+  text-align: center;
+  margin: 0;
+}
 
-    .alert {
-      margin: 0px;
-    }
+/* Emergency section spacing */
+.emergency-section {
+  margin-top: 50px;
+}
 
+/* Glowing text effect */
+.glow {
+  font-size: 50px;
+  text-align: center;
+  color: white;
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
 
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px #eee, 0 0 20px #000, 0 0 30px #000,
+                 0 0 40px #000, 0 0 50px #9554b3, 0 0 60px #9554b3, 0 0 70px #9554b3;
+  }
+  to {
+    text-shadow: 0 0 20px #eee, 0 0 30px #fa2d2d, 0 0 40px #fa2d2d,
+                 0 0 50px #fa2d2d, 0 0 60px #fa2d2d, 0 0 70px #fa2d2d, 0 0 80px #fa2d2d;
+  }
+}
 
-    .glow {
-      font-size: 50px;
-      color: white;
-      text-align: center;
-      -webkit-animation: glow 1s ease-in-out infinite alternate;
-      -moz-animation: glow 1s ease-in-out infinite alternate;
-      animation: glow 1s ease-in-out infinite alternate;
-    }
-
-    @-webkit-keyframes glow {
-      from {
-        text-shadow: 0 0 10px #eeeeee, 0 0 20px #000000, 0 0 30px #000000, 0 0 40px #000000, 0 0 50px #9554b3, 0 0 60px #9554b3, 0 0 70px #9554b3;
-      }
-
-      to {
-        text-shadow: 0 0 20px #eeeeee, 0 0 30px #fa2d2d, 0 0 40px #fa2d2d, 0 0 50px #fa2d2d, 0 0 60px #fa2d2d, 0 0 70px #fa2d2d, 0 0 80px #fa2d2d;
-      }
-    }
-  </style>
+</style>
 </head>
 <br>
 <br>
